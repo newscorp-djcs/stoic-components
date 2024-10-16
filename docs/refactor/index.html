@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="styles.css" />
+	</head>
+	<body>
+		<sidebar>
+			<iframe class="sidebarframe" src="sidebar.html" name="sidebar" title="It's a sidebar"></iframe>
+		</sidebar>
+		<main>
+			<h1>Refactor Guide</h1>
+			<p>It's a guide to help you refactor react components into simpler components that use CSS instead of emotion.js.</p>
+			
+			<h2>Goals</h2>
+			<ul>
+				<li>Eliminate emotion.js from everyting.</li>
+				<li>Make it easy to override styles in this kit with themes</li>
+				<li>prepackage the themes for downstream consumers</li>
+				<li>Try your best</li>
+			</ul>
+			
+			<h2>CSS Style</h2>
+			<h4>A brief review</h4>
+			<p>Styling individual components in an easily overwritten fashion requires a few changes. We're going for a low specificity baseline of component styles and then using some CSS variables to overwrite these base styles with theme styles. But first we need to establish their baseline styles and consume everything. </p>
+			
+			<p>Below is some CSS. It's a selector targeting the <pre>accordion</pre> element and applying styles.</p>
+<pre><code>accordian {
+  font-size: 10px;
+  line-height: 15px;
+  display:block;
+}
+</code></pre>
+			<p>CSS specificity refers to the rules governing what styles are applied to what element. CSS Specificity can be tricky if you're not familiar with them. But briefly, rules that come later overwrite rules that come earlier:</p>
+<pre><code>.party { color: blue }
+.party { color: red } /* Overwites blue. */
+</code></pre>
+
+		<p>CSS specificity is determined by adding points to certain specificity zones:</p>
+		<ul>
+			<li><strong>ID</strong>, like ID selectors <pre>#mything</pre></li>
+			<li><strong>CLASS</strong>, class selectors, attribute selectors, and pseudo classes. <pre>.mything</pre>, or <pre>[name="joanna"]</pre>, or <pre>:required</pre></li>
+			<li><strong>TYPE</strong>, which is the tag name, or pseudo-elements: <pre>p, div, input, ::before</pre></li>
+			<li><strong>NO VALUE</strong>, These are selectors that don't add anything to the specificity score. You can see them as low specificity.</li>
+		</ul>
+		
+		<p>These zones, can be represented as point values:</p>
+<pre><code>.classSelector { color:blue } /* 0-1-0 */
+</code></pre>
+		<p>These point values are separated into columns: <pre>ID-CLASS-TYPE</pre>, are the column types, and the number of selectors of a type are added to determine their specificity:</p>
+<pre><code>.classSelector { color:blue } /* 0-1-0 */
+#specialButton { background: orange } /* 1-0-0 */
+[heading-type="silly"] { font-family: comic-sans } /* 0-0-1 */
+
+.really .specific .nested button { font-size: 4rem; } /* 0-3-1 */
+</code></pre>
+		
+		<p>Specificity values are then compared, left to right, to determine which styles to use. The selector that comes later will win when compared to one with equal specificity values.</p>
+		
+<pre><code>button { color:blue } /* 0-0-1 */
+button.blue{ color: blue } /* 0-1-1 */
+button.red{ color: red } /* 0-1-1 */
+</code></pre>
+		<p>Above <pre>button</pre> is styled, then an override is applied when a button has a <pre>.blue</pre> class. Afterwards a <pre>.red</pre> selector is declared. If a button has a <pre>.blue</pre> and <pre>.red</pre> class, then it will turn out red, because red comes later.</p>
+		
+		<h2>How to achieve our goals</h2>
+		<p>We want to remove individual styles sheets for each of our components without managing complicated rules around the styles of those components, while making them easy to theme. This means that our baseline components need to have low specificity, and easily overrided baseline settings. Thankfully, modern CSS offers us a few ways to achieve this without sacrificing flexibility:</p>
+		
+		<h3>Use type names to refer to the element types in the DOM:</h3>
+		<p>Our components will have an enclosing tag, a name for the component, Begin styles by targeting this tag and then nesting subsequent style definitions:</p>
+		
+<pre><code>breadcrumb { 
+  /* breadcrumb styles */
+  a[type="link"] {
+    /* link styles */
+  }
+}
+</code></pre>
+
+		<h3>Prefer using CSS variables to wrap styles</h3>
+		<p>Given that we want our components to offer the same behaviour as before, easily styled via themes, without relying on <em>emotion.js</em>, we ought to use CSS variables to encapsulate styles that are often themed.</p>
+<pre><code>:root {
+  --cmp-brd-color: red;
+  --cmp-brd-height: 12px
+}
+breadcrumb { 
+  a[type="link"] {
+    color: var(--cmp-brd-color)
+    font-size: var(--cmp-brd-height);
+  }
+}
+</code></pre>
+
+		<h3>Avoid using classes to configure state.</h3>
+		<p>Classes are higher specificity than targeting element names or using no specificity selector tricks like <pre>:where</pre>. This makes anything using classes harder to override in downstream themes, or as part of configuration. Prefer using HTML attribute states instead. This works well especially with React as you can pass an attribute <pre>key:value</pre> pair via <pre>props</pre>.</p>
+		
+<pre><code>
+button { 
+	&:where([status="disabled"]) {
+		pointer-events: none;
+		background: var(--cmp-brd-disabled-color)
+	}
+}
+</code></pre>
+
+		<p>The <pre>:where</pre> pseudo-class function always has a specificity of <em>0</em>, which makes it easy to override</p>
+		
+		</main>
+		<script src="highlighter.js"></script>
+	</body>
+</html>

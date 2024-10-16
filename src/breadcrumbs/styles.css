@@ -1,0 +1,27 @@
+.stoic-breadcrumb {
+  
+  nav {
+    ${logicalProps()}
+    ${getStylePreset('')};
+  }
+  
+  ol {
+    list-style: none;
+    display: inline-flex;
+    margin: 0;
+    padding: 0px;
+  }
+  
+  li {
+    display: flex;
+    justify-content: center;
+    align-self: center;
+  }
+  
+  button {
+    ${({size, selected}) =>
+      getStylePreset(`breadcrumbItem.${size}`, '', {isSelected: selected})};
+    cursor: ${({selected}) => (selected ? 'text' : 'pointer')};
+  }
+
+}

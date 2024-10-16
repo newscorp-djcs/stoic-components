@@ -1,0 +1,59 @@
+body {
+	display:grid;
+	
+	grid-template-columns:1fr 4fr;
+	grid-template-areas: " sidebar main main main ";
+}
+
+sidebar {
+	position:relative;
+	display:block;
+	grid-area: sidebar;
+	min-width:160px;
+}
+
+.sidebarframe {
+	position:absolute;
+	display:block;
+	top:0;
+	bottom:0;
+	left:0;
+	right:0;
+	width:100%;
+	height:100%;
+	border:none;
+}
+
+main {
+	grid-area: main;
+	max-width: 860px;
+}
+
+
+/* syntax highlighting */
+li { margin-bottom: 0.25rem; }
+li pre, p pre {
+	display:inline;
+	padding: 3px;
+	border-radius:2px;
+	background: rgb(209, 209, 209);
+}
+
+pre code {
+	border-radius:5px;
+	color:white;
+	background: rgb(61, 59, 68);
+	display: block;
+	width: auto;
+	padding: 10px;
+	font-size: 17px;
+}
+
+:root {
+	--unformatted: white;
+	--keyword: rgb(241, 21, 105);
+	--field: rgb(45, 142, 250);
+	--punctuation: rgb(0, 209, 0);
+	--string: rgb(217, 168, 10);
+	--comment: rgb(121, 121, 121);	
+}
