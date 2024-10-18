@@ -23,7 +23,7 @@
 			<h4>A brief review</h4>
 			<p>Styling individual components in an easily overwritten fashion requires a few changes. We're going for a low specificity baseline of component styles and then using some CSS variables to overwrite these base styles with theme styles. But first we need to establish their baseline styles and consume everything. </p>
 			
-			<p>Below is some CSS. It's a selector targeting the <pre>accordion</pre> element and applying styles.</p>
+			<p>Below is some CSS. It's a selector targeting the <span class="inline-code">accordion</span> element and applying styles.</p>
 <pre><code>accordian {
   font-size: 10px;
   line-height: 15px;
@@ -37,16 +37,16 @@
 
 		<p>CSS specificity is determined by adding points to certain specificity zones:</p>
 		<ul>
-			<li><strong>ID</strong>, like ID selectors <pre>#mything</pre></li>
-			<li><strong>CLASS</strong>, class selectors, attribute selectors, and pseudo classes. <pre>.mything</pre>, or <pre>[name="joanna"]</pre>, or <pre>:required</pre></li>
-			<li><strong>TYPE</strong>, which is the tag name, or pseudo-elements: <pre>p, div, input, ::before</pre></li>
+			<li><strong>ID</strong>, like ID selectors <span class="inline-code">#mything</span class="inline-code"></li>
+			<li><strong>CLASS</strong>, class selectors, attribute selectors, and pseudo classes. <span class="inline-code">.mything</span class="inline-code">, or <span class="inline-code">[name="joanna"]</span class="inline-code">, or <span class="inline-code">:required</span class="inline-code"></li>
+			<li><strong>TYPE</strong>, which is the tag name, or pseudo-elements: <span class="inline-code">p, div, input, ::before</span class="inline-code"></li>
 			<li><strong>NO VALUE</strong>, These are selectors that don't add anything to the specificity score. You can see them as low specificity.</li>
 		</ul>
 		
 		<p>These zones, can be represented as point values:</p>
 <pre><code>.classSelector { color:blue } /* 0-1-0 */
 </code></pre>
-		<p>These point values are separated into columns: <pre>ID-CLASS-TYPE</pre>, are the column types, and the number of selectors of a type are added to determine their specificity:</p>
+		<p>These point values are separated into columns: <span class="inline-code">ID-CLASS-TYPE</span>, are the column types, and the number of selectors of a type are added to determine their specificity:</p>
 <pre><code>.classSelector { color:blue } /* 0-1-0 */
 #specialButton { background: orange } /* 1-0-0 */
 [heading-type="silly"] { font-family: comic-sans } /* 0-0-1 */
@@ -60,7 +60,7 @@
 button.blue{ color: blue } /* 0-1-1 */
 button.red{ color: red } /* 0-1-1 */
 </code></pre>
-		<p>Above <pre>button</pre> is styled, then an override is applied when a button has a <pre>.blue</pre> class. Afterwards a <pre>.red</pre> selector is declared. If a button has a <pre>.blue</pre> and <pre>.red</pre> class, then it will turn out red, because red comes later.</p>
+		<p>Above <span class="inline-code">button</span> is styled, then an override is applied when a button has a <span class="inline-code">.blue</span> class. Afterwards a <span class="inline-code">.red</span> selector is declared. If a button has a <span class="inline-code">.blue</span> and <span class="inline-code">.red</span> class, then it will turn out red, because red comes later.</p>
 		
 		<h2>How to achieve our goals</h2>
 		<p>We want to remove individual styles sheets for each of our components without managing complicated rules around the styles of those components, while making them easy to theme. This means that our baseline components need to have low specificity, and easily overrided baseline settings. Thankfully, modern CSS offers us a few ways to achieve this without sacrificing flexibility:</p>
@@ -91,18 +91,32 @@ breadcrumb {
 </code></pre>
 
 		<h3>Avoid using classes to configure state.</h3>
-		<p>Classes are higher specificity than targeting element names or using no specificity selector tricks like <pre>:where</pre>. This makes anything using classes harder to override in downstream themes, or as part of configuration. Prefer using HTML attribute states instead. This works well especially with React as you can pass an attribute <pre>key:value</pre> pair via <pre>props</pre>.</p>
+		<p>Classes are higher specificity than targeting element names or using no specificity selector tricks like <span class="inline-code">:where</span>. This makes anything using classes harder to override in downstream themes, or as part of configuration. Prefer using HTML attribute states instead. This works well especially with React as you can pass an attribute <span class="inline-code">key:value</span> pair via <span class="inline-code">props</span>.</p>
 		
-<pre><code>
-button { 
-	&:where([status="disabled"]) {
-		pointer-events: none;
-		background: var(--cmp-brd-disabled-color)
-	}
+<pre><code>button {
+  &:where([status="disabled"]) {
+    pointer-events: none;
+    background: var(--cmp-brd-disabled-color)
+  }
 }
 </code></pre>
 
-		<p>The <pre>:where</pre> pseudo-class function always has a specificity of <em>0</em>, which makes it easy to override</p>
+		<p>The <span class="inline-code">:where</span> pseudo-class function always has a specificity of <em>0</em>, which makes it easy to override. This means we can overload it for state changes in a themeable way.</p>
+		<p>To change options or state for a component we prefer setting attributes on an element and targeting the change of those attributes. Consider this markup:</p>
+
+<pre><code>&lt;button color="red" active="disabled" title="subscribe"&gt;Subscribe&lt;/button&gt;
+</code></pre>
+
+		<p>To style state changes or configuration for this html element for the color, we would target it's color attribute:</p>
+
+<pre><code>button {
+  &:where([color="red"]) { color:red; }
+  &:where([color="blue"]) { color:blue; }
+  &:where([color="green"]) { color:green; }
+}
+</code></pre>
+
+		<p>Supporting these state changes in our React components using this markup and styles would be as simple as passing the right props.</p>
 		
 		</main>
 		<script src="highlighter.js"></script>

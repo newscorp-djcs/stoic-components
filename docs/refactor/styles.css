@@ -32,9 +32,13 @@ main {
 
 /* syntax highlighting */
 li { margin-bottom: 0.25rem; }
-li pre, p pre {
+
+li .inline-code,
+p .inline-code {
 	display:inline;
+	color: rgb(61, 59, 68);
 	padding: 3px;
+	margin:0;
 	border-radius:2px;
 	background: rgb(209, 209, 209);
 }

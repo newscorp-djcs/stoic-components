@@ -1,8 +1,13 @@
+/*no includes*/
 .stoic-breadcrumb {
   
+  --stc-pdng: 12px;
+  --stc-pdng: var(--djds-space-020);
+  
   nav {
-    ${logicalProps()}
-    ${getStylePreset('')};
+    /*${logicalProps()}
+    ${getStylePreset('')};*/
+    padding: var(--stc-pdng);
   }
   
   ol {
@@ -24,4 +29,10 @@
     cursor: ${({selected}) => (selected ? 'text' : 'pointer')};
   }
 
+}
+
+/* Theme overrides */
+.stoic-breadcrumb {
+  --stc-pdng: 16px
+    
 }
