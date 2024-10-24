@@ -30,16 +30,16 @@ themes.forEach((theme) => {
 	
 let content = `// ${theme} theme
 // Add imports of theme dependent pieces here
-@import "${theme}/themefiles.scss"
-@import "colors/contextual/dark/DJDSColors.scss"
-@import "colors/contextual/light/DJDSColors.scss"
-@import "colors/palette/DJDSPalette.scss"
-@import "colors/palette/NKPaletteSocial.scss"
+@import "${theme}/themefiles.scss";
+@import "colors/contextual/dark/DJDSColors.scss";
+@import "colors/contextual/light/DJDSColors.scss";
+@import "colors/palette/DJDSPalette.scss";
+@import "colors/palette/NKPaletteSocial.scss";
 
 `
 
 	sasses.forEach((ssss) => {
-		content = content.concat(`@import ${ssss}\n`);
+		content = content.concat(`@import "${ssss}";\n`);
 	})
 	console.log(`${dest}styles.scss`)
 	generateSass(`${dest}styles.scss`, content)
