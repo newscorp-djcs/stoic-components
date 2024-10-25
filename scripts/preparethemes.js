@@ -8,6 +8,8 @@ const themes = ['bar', 'bys', 'dj', 'fct', 'fnl', 'mg', 'mw', 'ofn', 'rnc', 'wsj
 ensureFolder('dist/')
 
 // For each theme, grab the base styles
+// then add an import for the styles from the components to a sass file
+// then create the sass file in the file system.
 themes.forEach((theme) => {
 	let source = CSSPath + theme + ""
 	let dest = "dist/" + theme + "/"
@@ -42,7 +44,7 @@ let content = `// ${theme} theme
 		content = content.concat(`@import "${ssss}";\n`);
 	})
 	console.log(`${dest}styles.scss`)
-	generateSass(`${dest}styles.scss`, content)
+	generateSassRootFile(`${dest}styles.scss`, content)
 })
 
 // helper to ensure that we have a folder somewhere
@@ -58,20 +60,18 @@ function ensureFolder(folderName) {
 // removes a ton of folders that don't need to be there.
 function removeFoldersAt(place) {
 	
-	if(fs.existsSync(place + "colors")) {
-		execSync(`rm -rf ${place}colors`);
+	function removeDir(directory) {
+		if(fs.existsSync(directory)) {
+			execSync(`rm -rf directory`);
+		}
 	}
-	if(fs.existsSync(place + "shadows")) {
-		execSync(`rm -rf ${place}shadows`);
-	}
-	if(fs.existsSync(place + "spacing")) {
-		execSync(`rm -rf ${place}spacing`);
-	}
-	if(fs.existsSync(place + "typography")) {
-		execSync(`rm -rf ${place}typography`);
-	}
+	removeDir(place+"colors");
+	removeDir(place+"shadows");
+	removeDir(place+"spacing");
+	removeDir(place+"typography");
 }
 
+// Gets a list of directories at the dir
 function getDirectories(dir) {
 	var results = [];
 	fs.readdirSync(dir).forEach(function(file) {
@@ -84,7 +84,8 @@ function getDirectories(dir) {
 	return results;
 };
 
-function generateSass(file, content) {
+// generates a root sass file from provided content.
+function generateSassRootFile(file, content) {
 	fs.writeFile(file, content, error => {
 		if (error) {
 			console.log("something whent wrong")
@@ -93,70 +94,3 @@ function generateSass(file, content) {
 		}
 	});
 }
-
-//function grabSassFromDirectory(dir) {
-//	var comp = "";
-//	fs.readdirSync(dir).forEach(function(file) {
-//		file = dir+'/'+"styles.scss"
-//		let stat = fs.statSync(file);
-//		if (stat) {
-//			console.log(stat)
-//			comp = file;
-//		}
-//	})
-//	return file
-//}
-
-//
-//// Forward declarations
-//let __cmdArgs = {}
-//let __isCMDArgsParsed = false
-//let __debug = false;
-//
-//console.log("copy the css from the right package based on input")
-//
-//copyCSS(arguments.theme)
-//
-//console.log("Recursively grab CSS from our components and concatenate it into a build.")
-//
-//// returns the command line arguments in a neat little list
-//function CMDArgs() {
-//	if (__isCMDArgsParsed == true) return __cmdArgs
-//	let args = process.argv
-//	args.shift();args.shift();args.shift()
-//	
-//	process.argv.forEach(function (val, index, array) {
-//		if (val.includes("=")) {
-//			let cmds = val.split("=")
-//			__cmdArgs[cmds[0]] = cmds[1]
-//		}
-//	})
-//	
-//	if (__debug	== true) {
-//		for (let key in args) {
-//			console.log('  '+ key + ': ' + args[key]);
-//		}
-//	}
-//	
-//	__isCMDArgsParsed = true
-//	return __cmdArgs
-//}
-//
-//// copies css from the uds-theme-publisher for the specified build.
-//function copyCSS(theme) {
-//	let packageInstalled = false
-//	let path = "../node_modules/@newscorp-ghfb/djds-themes-publisher/"
-//	// verify that uds-theme-publisher is in node_modules
-//	if(fs.existsSync(path + 'package.json')) packageInstalled = true
-//	
-//	if (packageInstalled) {
-//		fs.readFile(path + '/' + theme + '/' + theme + '-design-tokens.tokens.json', (err, data) => {
-//			if (!err && data) {
-//				console.log("found this thing")
-//			}
-//		})
-//	} else {
-//		console.log("package is not installed")
-//	}
-//	
-//}
