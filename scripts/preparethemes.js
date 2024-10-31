@@ -14,37 +14,19 @@ themes.forEach((theme) => {
 	let source = CSSPath + theme + ""
 	let dest = "dist/" + theme + "/"
 	ensureFolder(dest)
-	removeFoldersAt(dest)
+	removeFoldersAt(dest, theme)
 	
 	// unzip
 	execSync(`unzip ${source}/css -d ${dest}`)
 	
-	let ders = getDirectories("src")
-	let sasses = []
-	ders.forEach((der) => {
-		// checks for styles file
-		var stylesFile = `${der}/styles.css`
-		if(fs.existsSync(stylesFile)) {
-			console.log(`found sass file: ${stylesFile}`)
-			sasses.push(stylesFile)
-		}
-	})
+	// make the file
+	let content = generateScssFileContent(theme)
+	let sassFileName = `${dest}styles.scss`
+	makeFile(sassFileName, content)
 	
-let content = `// ${theme} theme
-// Add imports of theme dependent pieces here
-@import "${theme}/themefiles.scss";
-@import "colors/contextual/dark/DJDSColors.scss";
-@import "colors/contextual/light/DJDSColors.scss";
-@import "colors/palette/DJDSPalette.scss";
-@import "colors/palette/NKPaletteSocial.scss";
-
-`
-
-	sasses.forEach((ssss) => {
-		content = content.concat(`@import "${ssss}";\n`);
-	})
-	console.log(`${dest}styles.scss`)
-	generateSassRootFile(`${dest}styles.scss`, content)
+	console.log(dest)
+	
+	execSync(`sass ${dest}styles.scss:${dest}styles.css`);
 })
 
 // helper to ensure that we have a folder somewhere
@@ -58,17 +40,26 @@ function ensureFolder(folderName) {
 }
 
 // removes a ton of folders that don't need to be there.
-function removeFoldersAt(place) {
+function removeFoldersAt(place, theme) {
 	
 	function removeDir(directory) {
 		if(fs.existsSync(directory)) {
-			execSync(`rm -rf directory`);
+			execSync(`rm -rf ${directory}`);
 		}
 	}
 	removeDir(place+"colors");
 	removeDir(place+"shadows");
 	removeDir(place+"spacing");
 	removeDir(place+"typography");
+	
+	let capitalTheme = theme.toUpperCase()
+	//console.log(`THE THEME IS: ${theme} ... ${capitalTheme}`)
+	
+	// remove random stuff here.
+	//console.log(`remove ${place}${capitalTheme}Preflight.txt`)
+	execSync(`rm -rf ${place}${capitalTheme}Preflight.txt`);
+	execSync(`rm -rf ${place}styles.scss`);
+	execSync(`rm -rf ${place}systemReport.txt`);
 }
 
 // Gets a list of directories at the dir
@@ -84,13 +75,53 @@ function getDirectories(dir) {
 	return results;
 };
 
+function getComponentStyles() {
+	// build a list of component styles
+	let sasses = []
+	getDirectories("src").forEach((der) => {
+		// checks for styles file
+		var stylesFile = `${der}/styles.css`
+		if(fs.existsSync(stylesFile)) {
+			//console.log(`found sass file: ${stylesFile}`)
+			sasses.push(stylesFile)
+		}
+	})
+	return sasses
+}
+
 // generates a root sass file from provided content.
-function generateSassRootFile(file, content) {
-	fs.writeFile(file, content, error => {
+function makeFile(filename, content) {
+	fs.writeFile(filename, content, error => {
 		if (error) {
-			console.log("something whent wrong")
+			console.log("failed to generate a file.")
 		} else {
-			console.log("Wrote file")
+			//console.log("Wrote a file.")
 		}
 	});
+}
+
+function generateScssFileContent(theme) {
+	// build a list of component styles
+	let sasses = getComponentStyles()
+	
+	let content = `// ${theme} theme
+@use "./typography/DJDSTypography";
+@use "./spacing/DJDSSpacing";
+@use "./spacing/WSJSpacing";
+@use "./shadows/light/DJDSShadows" as DJDSShadowsLight;
+@use "./shadows/dark/DJDSShadows" as DJDSShadowsDark;
+@use "./colors/contextual/dark/DJDSColors" as DJDSColorsLight;
+@use "./colors/contextual/light/DJDSColors" as DJDSColorsDark;
+@use "./colors/palette/DJDSPalette";
+@use "./colors/palette/NKPalette";
+@use "./colors/palette/NKPaletteSocial";
+
+`
+		
+	// add an import for each component to our sass file.
+	sasses.forEach((ssss) => {
+		content = content.concat(`@use "../../${ssss}";\n`);
+	})
+	
+	return content
 }
