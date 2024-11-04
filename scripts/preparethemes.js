@@ -20,13 +20,19 @@ themes.forEach((theme) => {
 	execSync(`unzip ${source}/css -d ${dest}`)
 	
 	// make the file
-	let content = generateScssFileContent(theme)
+	let content = generateScssFileContent(theme) 
 	let sassFileName = `${dest}styles.scss`
 	makeFile(sassFileName, content)
+
+	//let result = sass.compile(sassFileName, {style: "expanded", verbose: true})
+	//console.log(result.css)
+	//execSync(`sass ${dest}styles.scss:${dest}styles.css`)
 	
-	console.log(dest)
+	console.log(process.cwd())
+	let otherresult = sass.compileString(content)
+	console.log(otherresult)
 	
-	execSync(`sass ${dest}styles.scss:${dest}styles.css`);
+	console.log(sass.info)
 })
 
 // helper to ensure that we have a folder somewhere
@@ -53,10 +59,8 @@ function removeFoldersAt(place, theme) {
 	removeDir(place+"typography");
 	
 	let capitalTheme = theme.toUpperCase()
-	//console.log(`THE THEME IS: ${theme} ... ${capitalTheme}`)
 	
 	// remove random stuff here.
-	//console.log(`remove ${place}${capitalTheme}Preflight.txt`)
 	execSync(`rm -rf ${place}${capitalTheme}Preflight.txt`);
 	execSync(`rm -rf ${place}styles.scss`);
 	execSync(`rm -rf ${place}systemReport.txt`);
@@ -105,16 +109,16 @@ function generateScssFileContent(theme) {
 	let sasses = getComponentStyles()
 	
 	let content = `// ${theme} theme
-@use "./typography/DJDSTypography";
-@use "./spacing/DJDSSpacing";
-@use "./spacing/WSJSpacing";
-@use "./shadows/light/DJDSShadows" as DJDSShadowsLight;
-@use "./shadows/dark/DJDSShadows" as DJDSShadowsDark;
-@use "./colors/contextual/dark/DJDSColors" as DJDSColorsLight;
-@use "./colors/contextual/light/DJDSColors" as DJDSColorsDark;
-@use "./colors/palette/DJDSPalette";
-@use "./colors/palette/NKPalette";
-@use "./colors/palette/NKPaletteSocial";
+@use "/dist/${theme}/typography/DJDSTypography.css";
+@use "/dist/${theme}/spacing/DJDSSpacing";
+@use "/dist/${theme}/spacing/WSJSpacing";
+@use "/dist/${theme}/shadows/light/DJDSShadows" as DJDSShadowsLight;
+@use "/dist/${theme}/shadows/dark/DJDSShadows" as DJDSShadowsDark;
+@use "/dist/${theme}/colors/contextual/dark/DJDSColors" as DJDSColorsLight;
+@use "/dist/${theme}/colors/contextual/light/DJDSColors" as DJDSColorsDark;
+@use "/dist/${theme}/colors/palette/DJDSPalette";
+@use "/dist/${theme}/colors/palette/NKPalette";
+@use "/dist/${theme}/colors/palette/NKPaletteSocial";
 
 `
 		

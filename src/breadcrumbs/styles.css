@@ -22,12 +22,12 @@
     justify-content: center;
     align-self: center;
   }
-  
+  /*
   button {
     ${({size, selected}) =>
       getStylePreset(`breadcrumbItem.${size}`, '', {isSelected: selected})};
     cursor: ${({selected}) => (selected ? 'text' : 'pointer')};
-  }
+  }*/
 
 }
 
